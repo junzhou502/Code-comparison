@@ -1,0 +1,8 @@
+[submodule "cocoa"]
+	path = cocoa
+	url = https://github.com/junzhou502/cocoa.git
+	branch = main
+[submodule "ccl"]
+	path = ccl
+	url = https://github.com/junzhou502/CCL.git
+	branch = master
