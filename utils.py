@@ -7,15 +7,22 @@ import warnings
 def compare(
     dv1: np.ndarray,
     dv2: np.ndarray,
+    cov: np.ndarray,
+    mask: np.ndarray,
     label1: str,
     label2: str,
     domain: str,
-    nlens: int = 10,
-    nsrcs: int = 8,
+    nlens: int,
+    nsrcs: int,
+    vmin: int,
+    vmax: int,
     nbin : int = 20,
     dv1_include: list[bool] = [True, True, True, True],
     dv2_include: list[bool] = [True, True, True, True],
     show_include: list[bool] = [True, True, True, True],
+    cal_chi2: bool = False,
+    cal_full_chi2: bool = False,
+    if_plot: bool = False
 ):
     domain = domain.lower()
     dv1_include = np.array(dv1_include)
@@ -34,6 +41,18 @@ def compare(
             int((nsrcs*(nsrcs+1)+nlens*nsrcs+nlens)*nbin),
         ]
         probes_latex = ['xi+', 'xi-', 'gammat', 'wtheta']
+        xlabel = r'$\theta(\mathrm{arcmin})$'
+        logtmin = np.log(vmin)
+        logtmax = np.log(vmax)
+        logdt=(logtmax - logtmin)/nbin
+        fac = (2./3.)
+        xs = np.zeros(nbin)
+
+        for i in range(nbin):
+            thetamin = np.exp(logtmin + (i + 0.)*logdt)
+            thetamax = np.exp(logtmin + (i + 1.)*logdt)
+            xs[i] = fac * (thetamax**3 - thetamin**3) / (thetamax*thetamax    - thetamin*thetamin)
+
     else:
         Nprobe = 3
         dv_starts = [
@@ -43,6 +62,11 @@ def compare(
             int((nsrcs*(nsrcs+1)/2+nlens*nsrcs+nlens)*nbin),
         ]
         probes_latex = ['ss', 'gs', 'gg']
+        xlabel = r'$\ell$'
+        logdl = (np.log(vmax) - np.log(vmin))/nbin
+        xs = np.zeros(int(nbin))
+        for i in range(int(nbin)):
+            xs[i] = np.exp(np.log(vmin) + (i + 0.5)*logdl)
         
     #sanity check
     Length = 0
@@ -62,32 +86,61 @@ def compare(
     if (dv1_include&dv2_include&show_include).all()!=(show_include).all():
         warning.warn(f'we dont have the required probe to compare! check the bool array')
 
+    #calculate the chi2
+        #plot comparison
+    if cal_chi2:
+        dv1_l, dv2_l = 0, 0
+        for i in range(Nprobe):
+            delta = dv_starts[i+1] - dv_starts[i]
+            ntomo = int(delta/nbin)
+            if show_include[i]:
+                dv1_seg = dv1[dv1_l:dv1_l+delta]
+                dv2_seg = dv2[dv2_l:dv2_l+delta]
+                    
+                cov_seg = cov[dv_starts[i]:dv_starts[i+1],:][:,dv_starts[i]:dv_starts[i+1]]
+                mask_seg = mask[dv_starts[i]:dv_starts[i+1]]
+                if cal_full_chi2:
+                    chi2 = (dv1_seg-dv2_seg)@np.linalg.pinv(cov_seg)@(dv1_seg-dv2_seg)
+                    print(f'{probes_latex[i]} full chi2 is {chi2:.3f}')
+                dv1_seg_masked = dv1_seg[mask_seg]
+                dv2_seg_masked = dv2_seg[mask_seg]
+                cov_seg_masked = cov_seg[mask_seg,:][:,mask_seg]
+                chi2 = (dv1_seg_masked - dv2_seg_masked)@np.linalg.pinv(cov_seg_masked)@(dv1_seg_masked - dv2_seg_masked)
+                print(f'{probes_latex[i]} DES-masked chi2 is {chi2:.3f}')
+                
+            #correct the real index
+            if dv1_include[i]:
+                dv1_l += delta
+            if dv2_include[i]:
+                dv2_l += delta
     
     #plot comparison
-    dv1_l, dv2_l = 0, 0
-    for i in range(Nprobe):
-        delta = dv_starts[i+1] - dv_starts[i]
-        ntomo = int(delta/nbin)
-        if show_include[i]:
-            dv1_seg = dv1[dv1_l:dv1_l+delta]
-            dv2_seg = dv2[dv2_l:dv2_l+delta]
+    if if_plot:
+        dv1_l, dv2_l = 0, 0
+        for i in range(Nprobe):
+            delta = dv_starts[i+1] - dv_starts[i]
+            ntomo = int(delta/nbin)
+            if show_include[i]:
+                dv1_seg = dv1[dv1_l:dv1_l+delta]
+                dv2_seg = dv2[dv2_l:dv2_l+delta]
 
-            for j in range(ntomo):
-                l = int(j*nbin)
-                r = int((j+1)*nbin)
-                plt.plot(dv1_seg[l:r],label=label1)
-                plt.plot(dv2_seg[l:r],label=label2)
-                plt.legend()
-                plt.title(probes_latex[i] +' '+str(j))
-                plt.show()
+                for j in range(ntomo):
+                    l = int(j*nbin)
+                    r = int((j+1)*nbin)
+                    plt.plot(xs, dv1_seg[l:r],label=label1)
+                    plt.plot(xs, dv2_seg[l:r],label=label2)
+                    plt.xlabel(xlabel)
+                    plt.xscale('log')
+                    plt.legend()
+                    plt.title(probes_latex[i] +' '+str(j))
+                    plt.show()
+                            
+            #correct the real index
+            if dv1_include[i]:
+                dv1_l += delta
+            if dv2_include[i]:
+                dv2_l += delta
             
-        
-        #correct the real index
-        if dv1_include[i]:
-            dv1_l += delta
-        if dv2_include[i]:
-            dv2_l += delta
-        
     
 
 import matplotlib
