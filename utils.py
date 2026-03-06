@@ -147,6 +147,9 @@ def compare(
                 dv2_l += delta
                 
     if cal_all_probes_chi2:
+        chi2 = (dv1 - dv2)@np.linalg.pinv(cov)@(dv1 - dv2)
+        print(f'3x2pt full chi2 is {chi2:.3f}')
+
         masked_dv1 = dv1[mask]
         masked_dv2 = dv2[mask]
         invcov_masked = np.linalg.pinv(cov[mask,:][:,mask])
