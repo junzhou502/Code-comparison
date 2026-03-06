@@ -22,6 +22,7 @@ def compare(
     show_include: list[bool] = [True, True, True, True],
     cal_chi2: bool = False,
     cal_full_chi2: bool = False,
+    cal_all_probes_chi2: bool = False,
     if_plot: bool = False
 ):
     domain = domain.lower()
@@ -86,6 +87,10 @@ def compare(
     if (dv1_include&dv2_include&show_include).all()!=(show_include).all():
         warning.warn(f'we dont have the required probe to compare! check the bool array')
 
+    if cal_all_probes_chi2 and Nprobe!=int(np.sum(dv1_include&dv2_include)):
+        raise ValueError("you have to pass into all probes data vector before \n \
+            you calcualate the their chi2.")
+    
     #calculate the chi2
         #plot comparison
     if cal_chi2:
@@ -140,6 +145,14 @@ def compare(
                 dv1_l += delta
             if dv2_include[i]:
                 dv2_l += delta
+                
+    if cal_all_probes_chi2:
+        masked_dv1 = dv1[mask]
+        masked_dv2 = dv2[mask]
+        invcov_masked = np.linalg.pinv(cov[mask,:][:,mask])
+        chi2 = (masked_dv1 - masked_dv2)@invcov_masked@(masked_dv1 - masked_dv2)
+        
+        print(f'3x2pt DES-masked chi2 is {chi2:.3f}')
             
     
 
