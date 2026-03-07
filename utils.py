@@ -104,14 +104,15 @@ def compare(
                     
                 cov_seg = cov[dv_starts[i]:dv_starts[i+1],:][:,dv_starts[i]:dv_starts[i+1]]
                 mask_seg = mask[dv_starts[i]:dv_starts[i+1]]
-                if cal_full_chi2:
-                    chi2 = (dv1_seg-dv2_seg)@np.linalg.pinv(cov_seg)@(dv1_seg-dv2_seg)
-                    print(f'{probes_latex[i]} full chi2 is {chi2:.3f}')
                 dv1_seg_masked = dv1_seg[mask_seg]
                 dv2_seg_masked = dv2_seg[mask_seg]
                 cov_seg_masked = cov_seg[mask_seg,:][:,mask_seg]
-                chi2 = (dv1_seg_masked - dv2_seg_masked)@np.linalg.pinv(cov_seg_masked)@(dv1_seg_masked - dv2_seg_masked)
-                print(f'{probes_latex[i]} DES-masked chi2 is {chi2:.3f}')
+                chi2_masked = (dv1_seg_masked - dv2_seg_masked)@np.linalg.pinv(cov_seg_masked)@(dv1_seg_masked - dv2_seg_masked)
+                if cal_full_chi2:
+                    chi2_full = (dv1_seg-dv2_seg)@np.linalg.pinv(cov_seg)@(dv1_seg-dv2_seg)
+                    print(f'{probes_latex[i]} chi2 is {chi2_masked:.3f}/{chi2_full:.3f}')
+                else:
+                    print(f'{probes_latex[i]} chi2 is {chi2_masked:.3f}')
                 
             #correct the real index
             if dv1_include[i]:
@@ -147,15 +148,14 @@ def compare(
                 dv2_l += delta
                 
     if cal_all_probes_chi2:
-        chi2 = (dv1 - dv2)@np.linalg.pinv(cov)@(dv1 - dv2)
-        print(f'3x2pt full chi2 is {chi2:.3f}')
+        chi2_full = (dv1 - dv2)@np.linalg.pinv(cov)@(dv1 - dv2)
 
         masked_dv1 = dv1[mask]
         masked_dv2 = dv2[mask]
         invcov_masked = np.linalg.pinv(cov[mask,:][:,mask])
-        chi2 = (masked_dv1 - masked_dv2)@invcov_masked@(masked_dv1 - masked_dv2)
+        chi2_masked = (masked_dv1 - masked_dv2)@invcov_masked@(masked_dv1 - masked_dv2)
         
-        print(f'3x2pt DES-masked chi2 is {chi2:.3f}')
+        print(f'3x2pt chi2 is {chi2_masked:.3f}/{chi2_full:.3f}')
             
     
 
