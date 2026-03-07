@@ -17,7 +17,9 @@ We employ these systematics models in COCOA-CosmoLike to compute data vectors, a
 |Setup6|no_bin_average-Limber-RSD-takahashi **<br>**-IA_NLA(A=0.5, eta=0)-MagnificationBias(s=0.44)|
 
 
-$\chi^2 (\mathrm{masked}/\mathrm{full})$ between two pipelines under these setups
+## $\chi^2 (\mathrm{masked}/\mathrm{full})$ between two pipelines under these setups
+
+**Note** since comparison in configuration space is more strigent, we mainly show results in the configuration space here.
 
 ### Fourier Space
 |Probes|Setup0|Setup1|Setup2|Setup3|Setup4|Setup5|
@@ -27,9 +29,9 @@ $\chi^2 (\mathrm{masked}/\mathrm{full})$ between two pipelines under these setup
 |$C_\ell^{gg}$|0.028/0.078|x|x|x|x|x|
 |Total|0.087/0.198|x|x|x|x|x|
 
-### Configuration Space
+**Note**: We compute $\gamma t$ and $w(\theta)$ with full-sky approach while using flat-sky for $\xi^+$ and $\xi^-$ in CCL unless otherwise specified. In cosmolike, all correlation functions are done with the full-sky approach.
 
-**Note**: We compute $\gamma t$ and $w(\theta)$ with full-sky approach while using flat-sky for $\xi^+$ and $\xi^-$ unless otherwise specified. In cosmolike, all correlation functions are done with full-sky approach.
+### Configuration Space
 
 |Probes|Setup0|Setup1|Setup2|Setup3|Setup4|
 |:---|:---|:---|:---|:---|:---|
@@ -56,7 +58,7 @@ $\chi^2 (\mathrm{masked}/\mathrm{full})$ between two pipelines under these setup
 |Setup5_1|0.094/0.553|0.040/0.763|0.136/0.207|1.100/1.616|2.228|
 |Setup5_2|0.094/0.553|0.040/0.763|0.436/5.862|1.577/53.785|2.855|
 
-- **Setup5,Setup5_1,Setup5_2,**: We employ 'Bessel' (a fast full-sky algorithm) approach in CCL of comparison **Setup5_1**, and Flat-sky approach in CCL of comparison **Setup5_2**. It demonstrates that a frute-force full-sky is necessary for galaxy-clustering. 
+- **Setup5,Setup5_1,Setup5_2,**: We employ 'Bessel' (a fast full-sky algorithm) approach for galaxy clustering and lensing in CCL as the **Setup5_1**, and use Flat-sky approach for those in CCL as the **Setup5_2**. It demonstrates that a frute-force full-sky is necessary for galaxy-clustering, and it is also good to use a frute-force for galaxy-lensing. The speed is not a problem if the Legendre function is cached.
 
 3. 
 ||$\xi^-$|$\xi^+$|$\gamma t$|$w(\theta)$|Total|
@@ -64,9 +66,9 @@ $\chi^2 (\mathrm{masked}/\mathrm{full})$ between two pipelines under these setup
 |Setup5|0.094/0.553|0.040/0.763|0.007/0.052|0.562/0.581|2.130|
 |Setup6|0.094/0.553|0.040/0.763|0.007/0.052|0.006/0.023|0.957|
 
-- **Setup5 and Setup6**: Likely NonLimber has something wrong about the magnification bias.
+- **Setup5 and Setup6**: Likely their NonLimber has something wrong about the magnification bias.
 
-### Current Supported Systematics Model and Approximation
+### Current Supported Systematics Models and Approximations
 ||COCOA-CosmoLike|(Firecrown?)-CCL|
 |:---|:---|:---|
 |NonLimber|only support galaxy clustering|support three probes|
