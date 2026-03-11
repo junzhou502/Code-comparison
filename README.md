@@ -8,7 +8,7 @@ We employ these systematics models in COCOA-CosmoLike to compute data vectors, a
 
 |Setup|Description|
 |:---|:---|
-|Setup0|bin_average-Limber-noRSD-takahashi-bin_average|
+|Setup0|bin_average-Limber-noRSD-takahashi|
 |Setup1|no_bin_average-Limber-noRSD-takahashi|
 |Setup2|no_bin_average-NonLimber(gg only)-noRSD-takahashi|
 |Setup3|no_bin_average-NonLimber(gg only)-RSD-takahashi|
@@ -19,7 +19,7 @@ We employ these systematics models in COCOA-CosmoLike to compute data vectors, a
 
 ## $\chi^2 (\mathrm{masked}/\mathrm{full})$ between two pipelines under these setups
 
-**Note** since comparison in configuration space is more strigent, we mainly show results in the configuration space here.
+**Note**: since comparison in configuration space is more strigent, we mainly show results in the configuration space here.
 
 ### Fourier Space
 |Probes|Setup0|Setup1|Setup2|Setup3|Setup4|Setup5|
@@ -43,39 +43,39 @@ We employ these systematics models in COCOA-CosmoLike to compute data vectors, a
 
 ### Conclusions or Unresolved Problems
 
-1. 
+1. **Matter power spectrum**: note that the power spectrum of COCOA and CCL is never aligned during our test, therefore we force CCL uses the one simulated from COCOA.
+
+2. **Setup0 and Setup1**: Bin-average can raise great difference. People should decide which is more physical to use.
 ||$\xi^-$|$\xi^+$|$\gamma t$|$w(\theta)$|Total|
 |:---|:---|:---|:---|:---|:---|
 |Setup0|0.33/4.42|0.22/14.66|1.76/96.63|3.69/419.61|5.90/x|
 |Setup1|0.093/0.570|0.040/0.780||0.006/0.023|0.957|
 
-- **Setup0 and Setup1**: Bin-average can raise great difference. People should decide which is more physical to use.
-
-2.
+3. **Setup5,Setup5_1,Setup5_2,**: We employ 'Bessel' (a fast full-sky algorithm) approach for galaxy clustering and lensing in CCL as the **Setup5_1**, and use Flat-sky approach for those in CCL as the **Setup5_2**. It demonstrates that a frute-force full-sky is necessary for galaxy-clustering, and it is also good to use a frute-force for galaxy-lensing. The speed is not a problem if the Legendre function is cached.
 ||$\xi^-$|$\xi^+$|$\gamma t$|$w(\theta)$|Total|
 |:---|:---|:---|:---|:---|:---|
 |Setup5|0.094/0.553|0.040/0.763|0.007/0.052|0.562/0.581|2.130|
 |Setup5_1|0.094/0.553|0.040/0.763|0.136/0.207|1.100/1.616|2.228|
 |Setup5_2|0.094/0.553|0.040/0.763|0.436/5.862|1.577/53.785|2.855|
 
-- **Setup5,Setup5_1,Setup5_2,**: We employ 'Bessel' (a fast full-sky algorithm) approach for galaxy clustering and lensing in CCL as the **Setup5_1**, and use Flat-sky approach for those in CCL as the **Setup5_2**. It demonstrates that a frute-force full-sky is necessary for galaxy-clustering, and it is also good to use a frute-force for galaxy-lensing. The speed is not a problem if the Legendre function is cached.
-
-3. 
+4. **Setup5 and Setup6**: Likely their NonLimber has something wrong about the magnification bias.
 ||$\xi^-$|$\xi^+$|$\gamma t$|$w(\theta)$|Total|
 |:---|:---|:---|:---|:---|:---|
 |Setup5|0.094/0.553|0.040/0.763|0.007/0.052|0.562/0.581|2.130|
 |Setup6|0.094/0.553|0.040/0.763|0.007/0.052|0.006/0.023|0.957|
 
-- **Setup5 and Setup6**: Likely their NonLimber has something wrong about the magnification bias.
 
-### Current Supported Systematics Models and Approximations
-||COCOA-CosmoLike|(Firecrown?)-CCL|
+### Current Supported Systematics Models and Approximations (to my knowledge*)
+
+* please reach out if you have additional knowledge and this is incorrect
+
+||COCOA-CosmoLike|Firecrown-CCL|
 |:---|:---|:---|
 |NonLimber|only support galaxy clustering|support three probes|
 |RSD|linear model|linear model|
 |Intrinsic Alignment|NLA, TATT, LF|NLA(no eta)|
 |Magnification Bias|Support|Support|
-|Photo-z|Shift|Firecrown's Job|
-|Multiplicative Bias|Support|Firecrown's Job|
+|Photo-z|Shift|(Firecrown)Shift and Stretch|
+|Multiplicative Bias|Support|(Firecrown)Support|
 |Galaxy Bias|Linear Bias, NonLinear Bias|Linear Bias|
 |Point Mass Parameter|Support|x|

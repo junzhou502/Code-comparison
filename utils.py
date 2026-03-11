@@ -54,7 +54,7 @@ def compare(
             thetamax = np.exp(logtmin + (i + 1.)*logdt)
             xs[i] = fac * (thetamax**3 - thetamin**3) / (thetamax*thetamax    - thetamin*thetamin)
 
-    else:
+    elif domain == 'fourier':
         Nprobe = 3
         dv_starts = [
             0,
@@ -68,6 +68,8 @@ def compare(
         xs = np.zeros(int(nbin))
         for i in range(int(nbin)):
             xs[i] = np.exp(np.log(vmin) + (i + 0.5)*logdl)
+    else:
+        raise ValueError(f'Unknown Domain: {domain}')
         
     #sanity check
     Length = 0
@@ -75,17 +77,18 @@ def compare(
         if dv1_include[i]:
              Length += dv_starts[i+1] - dv_starts[i]
     if Length != len(dv1):
-        warning.warn(f'Length of dv1 is not as expected! the expectation is {Length}, while the real length is {len(dv1)}!')
+        warnings.warn(f'Length of dv1 is not as expected! the expectation is {Length}, while the real length is {len(dv1)}!')
         
     Length = 0
     for i in range(Nprobe):
         if dv2_include[i]:
              Length += dv_starts[i+1] - dv_starts[i]
     if Length != len(dv2):
-        warning.warn(f'Length of dv2 is not as expected! the expectation is {Length}, while the real length is {len(dv2)}!')
-        
-    if (dv1_include&dv2_include&show_include).all()!=(show_include).all():
-        warning.warn(f'we dont have the required probe to compare! check the bool array')
+        warnings.warn(f'Length of dv2 is not as expected! the expectation is {Length}, while the real length is {len(dv2)}!')
+
+    missing = show_include & ~(dv1_include & dv2_include)
+    if np.any(missing):
+        warnings.warn(f'we dont have the required probe of show_include to compare! check the bool array')
 
     if cal_all_probes_chi2 and Nprobe!=int(np.sum(dv1_include&dv2_include)):
         raise ValueError("you have to pass into all probes data vector before \n \
