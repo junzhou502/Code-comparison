@@ -46,12 +46,14 @@ We employ these systematics models in COCOA-CosmoLike to compute data vectors, a
 1. **Matter power spectrum**: note that the power spectrum of COCOA and CCL is never aligned during our test, therefore we force CCL uses the one simulated from COCOA.
 
 2. **Setup0 and Setup1**: Bin-average can raise great difference. People should decide which is more physical to use.
+
 ||$\xi^-$|$\xi^+$|$\gamma t$|$w(\theta)$|Total|
 |:---|:---|:---|:---|:---|:---|
 |Setup0|0.33/4.42|0.22/14.66|1.76/96.63|3.69/419.61|5.90/x|
-|Setup1|0.093/0.570|0.040/0.780||0.006/0.023|0.957|
+|Setup1|0.093/0.570|0.040/0.780|0.007/0.055|0.006/0.023|0.957|
 
 3. **Setup5,Setup5_1,Setup5_2,**: We employ 'Bessel' (a fast full-sky algorithm) approach for galaxy clustering and lensing in CCL as the **Setup5_1**, and use Flat-sky approach for those in CCL as the **Setup5_2**. It demonstrates that a frute-force full-sky is necessary for galaxy-clustering, and it is also good to use a frute-force for galaxy-lensing. The speed is not a problem if the Legendre function is cached.
+
 ||$\xi^-$|$\xi^+$|$\gamma t$|$w(\theta)$|Total|
 |:---|:---|:---|:---|:---|:---|
 |Setup5|0.094/0.553|0.040/0.763|0.007/0.052|0.562/0.581|2.130|
@@ -59,6 +61,7 @@ We employ these systematics models in COCOA-CosmoLike to compute data vectors, a
 |Setup5_2|0.094/0.553|0.040/0.763|0.436/5.862|1.577/53.785|2.855|
 
 4. **Setup5 and Setup6**: Likely their NonLimber has something wrong about the magnification bias.
+
 ||$\xi^-$|$\xi^+$|$\gamma t$|$w(\theta)$|Total|
 |:---|:---|:---|:---|:---|:---|
 |Setup5|0.094/0.553|0.040/0.763|0.007/0.052|0.562/0.581|2.130|
