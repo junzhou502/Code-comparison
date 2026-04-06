@@ -17,9 +17,9 @@ def compare(
     vmin: int,
     vmax: int,
     nbin : int = 20,
-    dv1_include: list[bool] = [True, True, True, True],
-    dv2_include: list[bool] = [True, True, True, True],
-    show_include: list[bool] = [True, True, True, True],
+    dv1_include: list[bool] = [ True, True, True],
+    dv2_include: list[bool] = [ True, True, True],
+    show_include: list[bool] = [ True, True, True],
     cal_chi2: bool = False,
     cal_full_chi2: bool = False,
     cal_all_probes_chi2: bool = False,
@@ -33,15 +33,14 @@ def compare(
     dv_starts = []
     probes_latex = []
     if domain == 'real':
-        Nprobe = 4
+        Nprobe = 3
         dv_starts = [
             0,
-            int(nsrcs*(nsrcs+1)/2*nbin),
             int(nsrcs*(nsrcs+1)*nbin),
             int((nsrcs*(nsrcs+1)+nlens*nsrcs)*nbin),
             int((nsrcs*(nsrcs+1)+nlens*nsrcs+nlens)*nbin),
         ]
-        probes_latex = ['xi+', 'xi-', 'gammat', 'wtheta']
+        probes_latex = ['xi', 'gammat', 'wtheta']
         xlabel = r'$\theta(\mathrm{arcmin})$'
         logtmin = np.log(vmin)
         logtmax = np.log(vmax)
