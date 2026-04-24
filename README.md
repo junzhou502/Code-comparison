@@ -8,13 +8,13 @@ We employ these systematics models in COCOA-CosmoLike to compute data vectors, a
 
 |Setup|Description|
 |:---|:---|
-|Setup0|bin_average-Limber-noRSD-takahashi|
-|Setup1|no_bin_average-Limber-noRSD-takahashi|
-|Setup2|no_bin_average-NonLimber(gg only)-noRSD-takahashi|
-|Setup3|no_bin_average-NonLimber(gg only)-RSD-takahashi|
-|Setup4|no_bin_average-NonLimber(gg only)-RSD-takahashi **<br>**-IA_NLA(A=0.5, eta=0)|
-|Setup5|no_bin_average-NonLimber(gg only)-RSD-takahashi **<br>**-IA_NLA(A=0.5, eta=0)-MagnificationBias(s=0.44)|
-|Setup6|no_bin_average-Limber-RSD-takahashi **<br>**-IA_NLA(A=0.5, eta=0)-MagnificationBias(s=0.44)|
+|Setup0|no_bin_average-Limber-noRSD-takahashi|
+|Setup1|bin_average-Limber-noRSD-takahashi|
+|Setup2|bin_average-NonLimber(gg only)-noRSD-takahashi|
+|Setup3|bin_average-NonLimber(gg only)-RSD-takahashi|
+|Setup4|bin_average-NonLimber(gg only)-RSD-takahashi **<br>**-IA_NLA(A=0.5, eta=0)|
+|Setup5|bin_average-NonLimber(gg only)-RSD-takahashi **<br>**-IA_NLA(A=0.5, eta=0)-MagnificationBias(s=0.44)|
+|Setup6|bin_average-Limber-RSD-takahashi **<br>**-IA_NLA(A=0.5, eta=0)-MagnificationBias(s=0.44)|
 
 
 ## $\chi^2 (\mathrm{masked}/\mathrm{full})$ between two pipelines under these setups

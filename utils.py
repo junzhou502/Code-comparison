@@ -23,7 +23,9 @@ def compare(
     cal_chi2: bool = False,
     cal_full_chi2: bool = False,
     cal_all_probes_chi2: bool = False,
-    if_plot: bool = False
+    if_plot: bool = False,
+    plot_sigma: bool = False,
+    plot_ratio: bool = False,
 ):
     domain = domain.lower()
     dv1_include = np.array(dv1_include)
@@ -123,27 +125,91 @@ def compare(
                 dv2_l += delta
     
     #plot comparison
+      # plot comparison
+        # plot comparison
     if if_plot:
         dv1_l, dv2_l = 0, 0
         for i in range(Nprobe):
             delta = dv_starts[i+1] - dv_starts[i]
-            ntomo = int(delta/nbin)
+            ntomo = int(delta / nbin)
+
             if show_include[i]:
+                if not (dv1_include[i] and dv2_include[i]):
+                    raise ValueError(
+                        f'Cannot plot probe {probes_latex[i]} because it is not included in both dv1 and dv2.'
+                    )
+
                 dv1_seg = dv1[dv1_l:dv1_l+delta]
                 dv2_seg = dv2[dv2_l:dv2_l+delta]
+                tomo_title_probe = probes_latex[i]
+
+                # ratio: (dv1 - dv2) / dv2
+                if plot_ratio:
+                    diff_seg = np.abs(dv1_seg - dv2_seg)
+                    ratio_seg = np.divide(
+                        diff_seg,
+                        np.abs(dv2_seg),
+                        out=np.full(diff_seg.shape, np.nan, dtype=float),
+                        where=dv2_seg != 0
+                    )
+
+                # sigma significance: (dv1 - dv2) / sqrt(diag(cov))
+                if plot_sigma:
+                    cov_seg = cov[dv_starts[i]:dv_starts[i+1], :][:, dv_starts[i]:dv_starts[i+1]]
+                    diag_cov = np.diag(cov_seg)
+
+                    if np.any(diag_cov < 0):
+                        warnings.warn(
+                            f'Negative diagonal covariance encountered in probe {probes_latex[i]}. '
+                            'These bins will be clipped to zero before sqrt.'
+                        )
+
+                    sigma_seg = np.sqrt(np.clip(diag_cov, 0.0, None))
+                    diff_seg = dv1_seg - dv2_seg
+                    signif_seg = np.divide(
+                        diff_seg,
+                        sigma_seg,
+                        out=np.full(diff_seg.shape, np.nan, dtype=float),
+                        where=sigma_seg > 0
+                    )
 
                 for j in range(ntomo):
-                    l = int(j*nbin)
-                    r = int((j+1)*nbin)
-                    plt.plot(xs, dv1_seg[l:r],label=label1)
-                    plt.plot(xs, dv2_seg[l:r],label=label2)
-                    plt.xlabel(xlabel)
-                    plt.xscale('log')
-                    plt.legend()
-                    plt.title(probes_latex[i] +' '+str(j))
-                    plt.show()
-                            
-            #correct the real index
+                    l = int(j * nbin)
+                    r = int((j + 1) * nbin)
+                    title_j = _tomo_title(domain, tomo_title_probe, j, nlens, nsrcs)
+
+                    # default mode
+                    if (not plot_ratio) and (not plot_sigma):
+                        plt.plot(xs, dv1_seg[l:r], label=label1)
+                        plt.plot(xs, dv2_seg[l:r], label=label2)
+                        plt.xlabel(xlabel)
+                        plt.xscale('log')
+                        plt.legend()
+                        plt.title(title_j)
+                        plt.show()
+
+                    # ratio mode
+                    if plot_ratio:
+                        plt.plot(xs, ratio_seg[l:r], label=f'|{label1} - {label2}| / |{label2}|')
+                        plt.xlabel(xlabel)
+                        plt.ylabel(r'$|dv1-dv2|/|dv2|$')
+                        plt.xscale('log')
+                        plt.yscale('log')
+                        plt.legend()
+                        plt.title(title_j + ' ratio')
+                        plt.show()
+
+                    # sigma mode
+                    if plot_sigma:
+                        plt.plot(xs, signif_seg[l:r], label=f'{label1} - {label2}')
+                        plt.xlabel(xlabel)
+                        plt.ylabel(r'$\Delta / \sqrt{\mathrm{diag}(\mathrm{Cov})}$')
+                        plt.xscale('log')
+                        plt.legend()
+                        plt.title(title_j + ' sigma')
+                        plt.show()
+
+            # correct the real index
             if dv1_include[i]:
                 dv1_l += delta
             if dv2_include[i]:
@@ -159,7 +225,51 @@ def compare(
         
         print(f'3x2pt chi2 is {chi2_masked:.3f}/{chi2_full:.3f}')
             
-    
+def _source_pairs(nsrcs: int):
+    pairs = []
+    for i in range(nsrcs):
+        for j in range(i, nsrcs):
+            pairs.append((i + 1, j + 1))
+    return pairs
+
+
+def _tomo_title(domain: str, probe: str, j: int, nlens: int, nsrcs: int) -> str:
+    if domain == 'real':
+        if probe == 'xi':
+            pairs = _source_pairs(nsrcs)
+            npair = len(pairs)
+            if j < npair:
+                s1, s2 = pairs[j]
+                return f'xi+ (source {s1}, {s2})'
+            else:
+                s1, s2 = pairs[j - npair]
+                return f'xi- (source {s1}, {s2})'
+
+        elif probe == 'gammat':
+            lens_bin = j // nsrcs + 1
+            source_bin = j % nsrcs + 1
+            return f'gammat (lens {lens_bin}, source {source_bin})'
+
+        elif probe == 'wtheta':
+            lens_bin = j + 1
+            return f'wtheta (lens {lens_bin})'
+
+    elif domain == 'fourier':
+        if probe == 'ss':
+            pairs = _source_pairs(nsrcs)
+            s1, s2 = pairs[j]
+            return f'ss (source {s1}, {s2})'
+
+        elif probe == 'gs':
+            lens_bin = j // nsrcs + 1
+            source_bin = j % nsrcs + 1
+            return f'gs (lens {lens_bin}, source {source_bin})'
+
+        elif probe == 'gg':
+            lens_bin = j + 1
+            return f'gg (lens {lens_bin})'
+
+    return f'{probe} {j}'
 
 import matplotlib
 
