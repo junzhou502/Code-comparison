@@ -2,3 +2,9 @@ __pycache__
 .ipynb_checkpoints
 
 check_chi2.ipynb
+chi2_nolimber_RSD_rubin.txt
+chi2_nolimber_RSD_roman.txt
+chi2_nolimber_roman.txt
+chi2_nolimber_rubin.txt
+benchmark
+ccl_test.ipynb
